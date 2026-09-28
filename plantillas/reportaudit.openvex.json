@@ -1,0 +1,16 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://github.com/TU-USUARIO/reportaudit-lab/vex/2026-001",
+  "author": "Nombre Apellido <tu-correo@ejemplo.com>",
+  "timestamp": "2026-10-01T10:00:00Z",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": { "name": "CVE-XXXX-XXXXX" },
+      "products": [ { "@id": "pkg:pypi/paquete@version" } ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Explica aquí, con evidencia del código, por qué la vulnerabilidad no es explotable en ReportAudit."
+    }
+  ]
+}

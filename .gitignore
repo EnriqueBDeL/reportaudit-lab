@@ -1,0 +1,18 @@
+# --- Entorno virtual y cachés de Python (se regeneran con un comando) ---
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# --- Datos locales: se crean con scripts/inicializar_db.py ---
+reportes.db
+
+# --- Binarios de herramientas descargados en la Parte I (no son código del proyecto) ---
+tools/
+
+# --- Archivos generados al usar el servicio ---
+*.pdf
+*.log
+
+# --- Secretos locales: NUNCA se versionan ---
+.env

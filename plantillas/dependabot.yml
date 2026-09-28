@@ -1,0 +1,25 @@
+# Configuración de Dependabot para ReportAudit
+version: 2
+updates:
+  # Dependencias de Python declaradas en requirements.txt
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    # 0 = sin PRs de "versión nueva disponible"; solo los de SEGURIDAD
+    open-pull-requests-limit: 0
+    groups:
+      parches-de-seguridad:
+        applies-to: security-updates
+        patterns: ["*"]
+    commit-message:
+      prefix: "build"
+      include: "scope"
+
+  # Acciones usadas por los workflows de .github/workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"

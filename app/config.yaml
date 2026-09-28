@@ -1,0 +1,8 @@
+servicio:
+  nombre: ReportAudit
+  puerto: 8080
+  entorno: produccion
+
+almacenamiento:
+  ruta_reportes: ./reportes
+  formato: pdf
