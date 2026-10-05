@@ -1,0 +1,51 @@
+# Pipeline de la cadena de suministro segura de ReportAudit.
+# Se ejecuta en cada Pull Request hacia main y en cada push a main.
+name: Cadena de suministro segura
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Mínimo privilegio: por defecto, los jobs solo pueden LEER el repositorio.
+permissions:
+  contents: read
+
+jobs:
+  sonarqube-cloud:
+    name: SAST - SonarQube Cloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código con todo su historial
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+
+      - name: Analizar con SonarQube Cloud
+        uses: SonarSource/sonarqube-scan-action@c7ee0f9df90b7aa20e8dcf9695dcfe2e7da5b4f2 # v7
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  codeql:
+    name: SAST - CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Preparar CodeQL para Python
+        uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        with:
+          languages: python
+          queries: security-extended
+
+      - name: Ejecutar el análisis y publicar los resultados
+        uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4
+        with:
+          category: "/language:python"
