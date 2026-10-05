@@ -16,11 +16,11 @@ import os
 import re
 import sqlite3
 import subprocess
+from pathlib import Path
 
 import yaml
 
 NOTIFICATION_API_KEY = os.getenv("NOTIFICATION_API_KEY", "")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 
 RUTA_DB = os.path.join(os.path.dirname(__file__), "..", "reportes.db")
 
@@ -44,24 +44,36 @@ def buscar_reportes_cliente(nombre_cliente, ruta_db=RUTA_DB):
 
 
 def _validar_nombre_archivo(nombre_archivo):
-    if not re.fullmatch(r"[A-Za-z0-9_.-]+", nombre_archivo):
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+\.html", nombre_archivo):
         raise ValueError("Nombre de archivo no válido")
 
 
 def convertir_a_pdf(nombre_archivo):
     """Convierte un reporte HTML a PDF usando la utilidad del sistema."""
     _validar_nombre_archivo(nombre_archivo)
-    comando = ["wkhtmltopdf", nombre_archivo, f"{nombre_archivo}.pdf"]
-    subprocess.run(comando, check=True)
-    return nombre_archivo + ".pdf"
+    ruta_html = Path(nombre_archivo)
+    contenido_html = ruta_html.read_bytes()
+    resultado = subprocess.run(
+        ["wkhtmltopdf", "-", "-"],
+        input=contenido_html,
+        capture_output=True,
+        check=True,
+    )
+    ruta_pdf = ruta_html.with_suffix(".pdf")
+    ruta_pdf.write_bytes(resultado.stdout)
+    return str(ruta_pdf)
 
 
 def hash_password_legacy(password):
     """Genera el hash de una contraseña para el sistema legado de clientes."""
-    return hashlib.sha256(password.encode()).hexdigest()
+    salt = os.urandom(16)
+    hash_derivado = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, 600_000)
+    return f"{salt.hex()}:{hash_derivado.hex()}"
 
 
 def notificar_cliente(email, mensaje):
     """Envía una notificación al cliente usando el servicio externo."""
-    print(f"[NotifyAPI key={NOTIFICATION_API_KEY[:6]}...] -> {email}: {mensaje}")
+    _ = mensaje
+    estado_api = "configurada" if NOTIFICATION_API_KEY else "sin_configurar"
+    print(f"[NotifyAPI:{estado_api}] Notificación enviada a {email}")
     return True
