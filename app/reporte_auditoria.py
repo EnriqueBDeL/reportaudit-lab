@@ -13,7 +13,6 @@ corregir. No uses este código como ejemplo de cómo hacer las cosas.
 
 import hashlib
 import os
-import re
 import sqlite3
 import subprocess
 from pathlib import Path
@@ -23,6 +22,7 @@ import yaml
 NOTIFICATION_API_KEY = os.getenv("NOTIFICATION_API_KEY", "")
 
 RUTA_DB = os.path.join(os.path.dirname(__file__), "..", "reportes.db")
+BASE_REPORTES_DIR = Path(__file__).resolve().parent
 
 
 def cargar_configuracion(ruta_config):
@@ -43,15 +43,22 @@ def buscar_reportes_cliente(nombre_cliente, ruta_db=RUTA_DB):
     return resultados
 
 
-def _validar_nombre_archivo(nombre_archivo):
-    if not re.fullmatch(r"[A-Za-z0-9_.-]+\.html", nombre_archivo):
+def _resolver_archivo_html(nombre_archivo):
+    if not isinstance(nombre_archivo, str) or not nombre_archivo.endswith(".html"):
         raise ValueError("Nombre de archivo no válido")
+    if "/" in nombre_archivo or "\\" in nombre_archivo or ".." in nombre_archivo:
+        raise ValueError("Nombre de archivo no válido")
+
+    archivos_disponibles = {ruta.name: ruta for ruta in BASE_REPORTES_DIR.glob("*.html")}
+    ruta_html = archivos_disponibles.get(nombre_archivo)
+    if ruta_html is None:
+        raise ValueError("Archivo no encontrado")
+    return ruta_html
 
 
 def convertir_a_pdf(nombre_archivo):
     """Convierte un reporte HTML a PDF usando la utilidad del sistema."""
-    _validar_nombre_archivo(nombre_archivo)
-    ruta_html = Path(nombre_archivo)
+    ruta_html = _resolver_archivo_html(nombre_archivo)
     contenido_html = ruta_html.read_bytes()
     resultado = subprocess.run(
         ["wkhtmltopdf", "-", "-"],
