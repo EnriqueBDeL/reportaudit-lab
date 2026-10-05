@@ -23,7 +23,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Omitir análisis en CI cuando SonarCloud tiene Automatic Analysis
+        if: ${{ vars.SONAR_CI_ENABLED != 'true' }}
+        run: |
+          echo "SonarQube Cloud en CI está desactivado."
+          echo "Define la variable SONAR_CI_ENABLED=true cuando desactives Automatic Analysis en SonarCloud."
+
       - name: Analizar con SonarQube Cloud
+        if: ${{ vars.SONAR_CI_ENABLED == 'true' }}
         uses: SonarSource/sonarqube-scan-action@v7
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
