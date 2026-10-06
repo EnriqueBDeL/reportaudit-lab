@@ -1,0 +1,14 @@
+# Hooks que se ejecutan en TU máquina antes de cada commit
+repos:
+  - repo: https://github.com/semgrep/pre-commit
+    rev: "v1.172.0"
+    hooks:
+      - id: semgrep
+        name: SAST local (Semgrep)
+        files: ^app/
+        args:
+          - "--config=p/python"
+          - "--config=p/secrets"
+          - "--error"
+          - "--metrics=off"
+          - "--skip-unknown-extensions"
