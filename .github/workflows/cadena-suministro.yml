@@ -31,7 +31,7 @@ jobs:
 
       - name: Analizar con SonarQube Cloud
         if: ${{ vars.SONAR_CI_ENABLED == 'true' }}
-        uses: SonarSource/sonarqube-scan-action@v7
+        uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
