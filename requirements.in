@@ -1,5 +1,5 @@
 # Dependencias DIRECTAS de ReportAudit: lo que el equipo decidió usar.
 # No se instala desde este archivo: a partir de él se genera el lockfile
 # requirements.txt con pip-compile (pip-tools).
-flask==3.0.0
+flask==3.1.3
 pyyaml==6.0.3
