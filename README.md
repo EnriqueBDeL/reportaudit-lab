@@ -19,6 +19,13 @@ python scripts/inicializar_db.py
 python app/servicio.py            # http://127.0.0.1:8080
 ```
 
+## Credenciales de notificación
+
+El servicio lee `REPORTAUDIT_NOTIFICATION_API_KEY` y `REPORTAUDIT_SMTP_PASSWORD`
+del entorno. Configúralas fuera del repositorio antes de usarlas; no guardes sus
+valores en el código ni en los logs. Si alguna credencial real estuvo expuesta,
+rótala en el servicio correspondiente.
+
 ## Estructura
 
 | Ruta | Contenido |
